@@ -61,9 +61,11 @@ interface PaginationProps {
 
 interface MangasContextData {
   mangas: MangaProps[]
+  pageSettings: PaginationProps
   isLoading: boolean
-  page: PaginationProps
   loadMangas: (page: number) => void
+  loadOneManga: (id: number) => void
+  mangaSelected: MangaProps
 }
 
 const MangasContext = createContext({} as MangasContextData)
@@ -71,23 +73,46 @@ const MangasContext = createContext({} as MangasContextData)
 export function MangasProvider({ children }: MangasProviderProps) {
   const [mangas, setMangas] = useState<MangaProps[]>([])
   const [isLoading, setIsLoading] = useState(false)
-  const [page, setPage] = useState<PaginationProps>({
+  const [pageSettings, setPageSettings] = useState<PaginationProps>({
     current_page: 1,
     has_next_page: true,
   })
+  const [mangaSelected, setMangaSelected] = useState<MangaProps>(() => {
+    return mangas[0]
+  })
+
+  useEffect(() => {
+    loadMangas(1)
+  }, [])
 
   async function loadMangas(page: number) {
     setIsLoading(true)
-    
-    const response = await apiMangasPage.get(`manga?page=${page}`)
-
-    setMangas(response.data.data)
-    setPage(response.data.pagination)
+    if (pageSettings.has_next_page) {
+      const response = await apiMangasPage.get(`manga?page=${page}`)
+      setMangas(response.data.data)
+      setPageSettings(response.data.pagination)
+      setMangaSelected(response.data.data[0])
+    }
     setIsLoading(false)
   }
 
+  function loadOneManga(id: number) {
+    const mangaFilter = mangas.filter((manga) => manga.mal_id === id)
+
+    setMangaSelected(mangaFilter[0])
+  }
+
   return (
-    <MangasContext.Provider value={{ mangas, page, isLoading, loadMangas }}>
+    <MangasContext.Provider
+      value={{
+        mangas,
+        pageSettings,
+        isLoading,
+        loadMangas,
+        loadOneManga,
+        mangaSelected,
+      }}
+    >
       {children}
     </MangasContext.Provider>
   )
