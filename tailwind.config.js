@@ -15,10 +15,10 @@ module.exports = {
         'backgroundHome': "url('src/assets/background.jpg')"
       }
     },
-  }
-  // plugins: [
+  },
+  plugins: [
   //   require('@tailwindcss/forms'),
-  //   require('tailwind-scrollbar'),
-  // ],
+    require('tailwind-scrollbar'),
+  ],
 }
 
