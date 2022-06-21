@@ -1,4 +1,10 @@
-import { createContext, ReactNode, useContext, useState } from 'react'
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from 'react'
 import { apiManga } from '../services/api'
 import { CharactersProps } from '../types/mangasContextTypes/CharactersProps'
 
@@ -20,7 +26,7 @@ export function MangasProvider({ children }: MangasProviderProps) {
     current_page: 1,
     has_next_page: true,
   })
-  
+
   const [favoriteCharacter, setFavoriteCharacter] = useState<CharactersProps[]>(
     [],
   )
@@ -29,17 +35,23 @@ export function MangasProvider({ children }: MangasProviderProps) {
     has_next_page: true,
   })
 
-  const [topMangas, setTopMangas] = useState<MangaProps[]>(
-    [],
-  )
+  const [topMangas, setTopMangas] = useState<MangaProps[]>([])
   const [pageTopMangas, setPageTopMangas] = useState<PaginationProps>({
     current_page: 1,
     has_next_page: true,
   })
 
+  const [mangaSelected, setMangaSelected] = useState<MangaProps>(() => {
+    return mangas[0]
+  })
+
   const [isLoadingMangas, setIsLoadingMangas] = useState(false)
   const [isLoadingCharacter, setIsLoadingCharacter] = useState(false)
   const [isLoadingBestMangas, setIsLoadingBestMangas] = useState(false)
+
+  useEffect(() => {
+    loadMangas(1)
+  }, [])
 
   async function loadMangas(page: number) {
     setIsLoadingMangas(true)
@@ -77,6 +89,12 @@ export function MangasProvider({ children }: MangasProviderProps) {
     setIsLoadingBestMangas(false)
   }
 
+  function loadOneManga(id: number) {
+    const mangaFilter = mangas.filter((manga) => manga.mal_id === id)
+
+    setMangaSelected(mangaFilter[0])
+  }
+
   return (
     <MangasContext.Provider
       value={{
@@ -92,6 +110,8 @@ export function MangasProvider({ children }: MangasProviderProps) {
         loadMangas,
         loadFavoriteCharacter,
         loadTopMangas,
+        loadOneManga,
+        mangaSelected,
       }}
     >
       {children}
