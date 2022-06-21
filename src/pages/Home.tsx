@@ -14,6 +14,7 @@ export default function Home() {
       <ListTopCharacters />
       <ListTopMangas />
       <Footer />
+      <h2>teste</h2>
     </div>
   )
 }
