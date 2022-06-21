@@ -22,4 +22,7 @@ export interface MangasContextData {
   loadMangas: (page: number) => void
   loadTopMangas: (page: number) => void
   loadFavoriteCharacter: (page: number) => void
+
+  loadOneManga: (id: number) => void
+  mangaSelected: MangaProps
 }

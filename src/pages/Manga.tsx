@@ -1,11 +1,11 @@
 import { useMangas } from '../contexts/MangasContext'
 
 export default function Manga() {
-  const { mangaSelected, isLoading } = useMangas()
+  const { mangaSelected, isLoadingMangas } = useMangas()
 
   return (
     <>
-      {!isLoading && (
+      {!isLoadingMangas && (
         <div>
           <h1>{mangaSelected?.title}</h1>
         </div>
