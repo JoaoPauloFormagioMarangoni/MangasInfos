@@ -4,11 +4,7 @@ export const api = axios.create({
   baseURL: 'http://localhost:3333',
 })
 
-export const apiMangas = axios.create({
-  baseURL: 'https://api.jikan.moe/v4/manga/{id}/full',
-})
-
-export const apiMangasPage = axios.create({
+export const apiManga = axios.create({
   baseURL: 'https://api.jikan.moe/v4',
 })
 

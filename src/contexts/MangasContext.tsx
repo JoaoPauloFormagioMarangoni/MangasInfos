@@ -1,93 +1,99 @@
+import { createContext, ReactNode, useContext, useState } from 'react'
+import { apiManga } from '../services/api'
+import { CharactersProps } from '../types/mangasContextTypes/CharactersProps'
+
+import { MangaProps } from '../types/mangasContextTypes/MangaProps'
 import {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useState,
-} from 'react'
-import { apiMangasPage } from '../services/api'
+  MangasContextData,
+  PaginationProps,
+} from '../types/mangasContextTypes/MangasContextData'
 
 interface MangasProviderProps {
   children: ReactNode
-}
-
-interface MangaProps {
-  mal_id: number
-  url: string
-  images: {
-    webp: {
-      image_url: string
-    }
-  }
-  title: string
-  title_english: string
-  title_japanese: string
-  chapters: number
-  volumes: number
-  status: string
-  published: {
-    prop: {
-      from: {
-        day: number
-        month: number
-        year: number
-      }
-      to: {
-        day: number
-        month: number
-        year: number
-      }
-    }
-    string: string
-  }
-  score: number
-  rank: number
-  favorites: number
-  synopsis: string
-  authors: [
-    {
-      mal_id: number
-      type: string
-      name: string
-      url: string
-    },
-  ]
-}
-
-interface PaginationProps {
-  current_page: number
-  has_next_page: boolean
-}
-
-interface MangasContextData {
-  mangas: MangaProps[]
-  isLoading: boolean
-  page: PaginationProps
-  loadMangas: (page: number) => void
 }
 
 const MangasContext = createContext({} as MangasContextData)
 
 export function MangasProvider({ children }: MangasProviderProps) {
   const [mangas, setMangas] = useState<MangaProps[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [page, setPage] = useState<PaginationProps>({
+  const [pageMangas, setPageMangas] = useState<PaginationProps>({
+    current_page: 1,
+    has_next_page: true,
+  })
+  
+  const [favoriteCharacter, setFavoriteCharacter] = useState<CharactersProps[]>(
+    [],
+  )
+  const [pageCharacters, setPageCharacters] = useState<PaginationProps>({
     current_page: 1,
     has_next_page: true,
   })
 
+  const [topMangas, setTopMangas] = useState<MangaProps[]>(
+    [],
+  )
+  const [pageTopMangas, setPageTopMangas] = useState<PaginationProps>({
+    current_page: 1,
+    has_next_page: true,
+  })
+
+  const [isLoadingMangas, setIsLoadingMangas] = useState(false)
+  const [isLoadingCharacter, setIsLoadingCharacter] = useState(false)
+  const [isLoadingBestMangas, setIsLoadingBestMangas] = useState(false)
+
   async function loadMangas(page: number) {
-    setIsLoading(true)
-    
-    const response = await apiMangasPage.get(`manga?page=${page}`)
+    setIsLoadingMangas(true)
+
+    const response = await apiManga.get(`manga?page=${page}`)
 
     setMangas(response.data.data)
-    setPage(response.data.pagination)
-    setIsLoading(false)
+    setPageMangas(response.data.pagination)
+    setIsLoadingMangas(false)
+  }
+
+  async function loadFavoriteCharacter(page: number) {
+    setIsLoadingCharacter(true)
+
+    const response = await apiManga.get(
+      `characters?order_by=favorites&sort=desc&page=${page}`,
+    )
+    console.log(response.data.data[0])
+
+    setFavoriteCharacter(response.data.data)
+    setPageCharacters(response.data.pagination)
+    setIsLoadingCharacter(false)
+  }
+
+  async function loadTopMangas(page: number) {
+    setIsLoadingBestMangas(true)
+
+    const response = await apiManga.get(
+      `top/manga?order_by=favorites&sort=desc&page=${page}`,
+    )
+    console.log(response.data.data[0])
+
+    setTopMangas(response.data.data)
+    setPageTopMangas(response.data.pagination)
+    setIsLoadingBestMangas(false)
   }
 
   return (
-    <MangasContext.Provider value={{ mangas, page, isLoading, loadMangas }}>
+    <MangasContext.Provider
+      value={{
+        mangas,
+        favoriteCharacter,
+        topMangas,
+        pageMangas,
+        pageCharacters,
+        pageTopMangas,
+        isLoadingMangas,
+        isLoadingCharacter,
+        isLoadingBestMangas,
+        loadMangas,
+        loadFavoriteCharacter,
+        loadTopMangas,
+      }}
+    >
       {children}
     </MangasContext.Provider>
   )
