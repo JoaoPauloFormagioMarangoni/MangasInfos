@@ -38,6 +38,7 @@ export function ListTopMangas() {
             {pages.data.map((manga: MangaProps) => (
               <li
                 key={manga.mal_id}
+                onClick={() => handleSelectManga(manga)}
                 className="flex items-center border-pink-600 border-4 rounded-md text-white cursor-pointer hover:shadow-[3px_3px_5px,-3px_-3px_5px] hover:shadow-pink-600 transition-all duration-200"
               >
                 <img
