@@ -1,4 +1,6 @@
 import { Fragment } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useMangas } from '../contexts/MangasContext'
 import { useToGetInformationsAboutMangas } from '../hooks/useToGetInformationsAboutMangas'
 import { MangaProps } from '../types/mangasContextTypes/MangaProps'
 
@@ -13,6 +15,15 @@ export function ListTopMangas() {
     'topMangas',
     'top/manga?order_by=favorites&sort=desc&page=',
   )
+
+  const { loadOneManga } = useMangas()
+  const navigate = useNavigate()
+
+  function handleSelectManga(manga: MangaProps) {
+    loadOneManga(manga)
+
+    navigate('/manga')
+  }
 
   return status === 'loading' ? (
     <p>Loading...</p>
