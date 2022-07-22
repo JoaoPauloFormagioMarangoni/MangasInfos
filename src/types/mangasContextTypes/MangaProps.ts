@@ -40,3 +40,13 @@ export interface MangaProps {
     },
   ]
 }
+
+export interface PaginationProps {
+  current_page: number
+  has_next_page: boolean
+}
+
+export interface DataProps {
+  data: MangaProps[],
+  pagination: PaginationProps,
+}
